@@ -1,78 +1,47 @@
-\# 🏥 Sistema de Clínica Médica - Módulo Tech Lead / Infra \& Gateway
+# 🏥 Sistema de Clínica Médica - Infraestrutura & API Gateway
 
+## 👥 Integrantes do Grupo e Papéis
+* **Lucas Paris** - Tech Lead / Infra & Gateway (Configuração do Spring Cloud Gateway, Docker, Security JWT)
+* **Joao Gabriel** - Dev Microsserviço Agendamento (Spring Boot + JPA, Lógica de Agendamento)
+* **Lucas Silveira** - Dev Microsserviço Atendimento (Spring Boot + JPA, Prontuário, Anamnese)
+* **Geovani** - Dev Microsserviço Administrativo (Gerenciamento de Funcionários, Médicos, Especialidades, Convênios e validações de dados)
+* **Derlan Silva:** QA, Doc & Testes (Criando Collections no Postman, Documentação com OpenAPI/SpringDoc e Testes Unitários com JUnit)
 
+---
 
-\## 👥 Integrantes do Grupo
+## 📌 Sobre o Subprojeto
+Este é o coração da infraestrutura do sistema. Ele centraliza todas as requisições através do Spring Cloud Gateway, faz o roteamento inteligente para cada microsserviço, gerencia a segurança de ponta a ponta com autenticação via Tokens JWT e unifica o ambiente utilizando Docker.
 
-\* \*\*Lucas Paris\*\* - (Responsável por Tech Lead / Infra \& Gateway)
+### 🛠️ Tecnologias Utilizadas
+* **Java 17** (Linguagem base obrigatória)
+* **Spring Boot 3.5.15** (Framework base)
+* **Spring Cloud Gateway** (Roteamento e segurança da API)
+* **Spring Security & JWT** (Autenticação e controle de acesso dos usuários)
+* **Docker & Docker Compose** (Containerização e orquestração do ambiente)
+* **YAML (`application.yml`)** (Formato de configuração das propriedades de rotas)
 
-\* \*\*Lucas Silveira\*\* - (Responsável pelo Módulo de Atendimento)
+---
 
-\* \*\*João Gabriel\*\* - (Responsável pelo Módulo de Agendamento)
+## ⚙️ Configuração do Gateway
 
-\* \*\*Geovani\*\* - (Responsável pelo Módulo Administrativo)
-
-
-
-\---
-
-
-
-\## 📌 Sobre o Subprojeto
-
-Este módulo é a espinha dorsal da infraestrutura do sistema, atuando como o \*\*API Gateway\*\* centralizador. Ele faz o roteamento das requisições para os microsserviços/módulos independentes da clínica com segurança e resiliência.
-
-
-
-\### 🛠️ Tecnologias Utilizadas
-
-\* \*\*Java 17\*\* (Linguagem principal)
-
-\* \*\*Spring Boot 3.5.x\*\* (Framework do projeto)
-
-\* \*\*Spring Cloud Gateway\*\* (Roteamento de API)
-
-\* \*\*Maven\*\* (Gerenciador de dependências)
-
-\* \*\*YAML (`application.yml`)\*\* (Formato de configuração)
-
-
-
-\---
-
-
-
-\## ⚙️ Configuração do API Gateway
-
-
-
-Para que o Gateway roteie as chamadas corretamente para os módulos locais de cada colega, o arquivo `src/main/resources/application.yml` deve seguir a estrutura abaixo:
-
-
+A estrutura base de roteamento configurada no arquivo `src/main/resources/application.yml` direciona o tráfego conforme o padrão abaixo:
 
 ```yaml
-
 spring:
-
-&#x20; cloud:
-
-&#x20;   gateway:
-
-&#x20;     routes:
-
-&#x20;       - id: agendamento-module
-
-&#x20;         uri: http://localhost:8081
-
-&#x20;         predicates:
-
-&#x20;           - Path=/agendamentos/\*\*
-
-&#x20;       - id: atendimento-module
-
-&#x20;         uri: http://localhost:8082
-
-&#x20;         predicates:
-
-&#x20;           - Path=/atendimentos/\*\*
-
+  application:
+    name: clinica-infra-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: administrativo-route
+          uri: http://localhost:8081
+          predicates:
+            - Path=/administrativo/**
+        - id: agendamento-route
+          uri: http://localhost:8082
+          predicates:
+            - Path=/agendamento/**
+        - id: atendimento-route
+          uri: http://localhost:8083
+          predicates:
+            - Path=/atendimento/**
